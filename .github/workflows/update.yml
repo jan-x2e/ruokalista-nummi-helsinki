@@ -26,6 +26,14 @@ jobs:
       - name: Generoi index.html
         run: python generate.py
 
+      - name: Commitoi index.html
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add index.html
+          git commit -m "Päivitä ruokalista $(date '+%d.%m.%Y')" || echo "Ei muutoksia"
+          git push
+
       - name: Deploy Netlifyyn
         uses: netlify/actions/cli@master
         with:
