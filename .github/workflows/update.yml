@@ -2,14 +2,12 @@ name: Päivitä ruokalista
 
 on:
   schedule:
-    # Ajetaan ma-pe klo 7:00 Suomen aikaa (5:00 UTC)
     - cron: '0 5 * * 1-5'
-  workflow_dispatch:  # Voit myös ajaa käsin GitHubista
+  workflow_dispatch:
 
 jobs:
   generate:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
