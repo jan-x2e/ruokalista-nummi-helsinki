@@ -101,19 +101,6 @@ def paiva_otsikko(paiva_str: str) -> tuple[str, str]:
     return nimi, pvm
 
 
-def on_tanaan(paiva_str: str) -> bool:
-    tanaan = datetime.now()
-    paiva_pattern = re.compile(r'\d{1,2}\.\d{1,2}\.\d{4}')
-    m = paiva_pattern.search(paiva_str)
-    if not m:
-        return False
-    try:
-        pvm = datetime.strptime(m.group(), "%d.%m.%Y")
-        return pvm.date() == tanaan.date()
-    except ValueError:
-        return False
-
-
 def generoi_html(paivat: dict) -> str:
     viikko = datetime.now().isocalendar().week
     paivitetty = datetime.now().strftime("%-d.%-m.%Y klo %H:%M")
@@ -122,20 +109,15 @@ def generoi_html(paivat: dict) -> str:
     kortit_html = ""
     for paiva_str, ruoat in paivat.items():
         nimi, pvm = paiva_otsikko(paiva_str)
-        tanaan_luokka = "tanaan" if on_tanaan(paiva_str) else ""
-
         # Poistetaan duplikaatit
         naytettyt = list(dict.fromkeys(ruoat))
 
-        # Jaetaan ruoat kahteen ryhmään (kaksi lounasvaihtoehtoa)
-        # Etsitään jakokohta — yleensä "Perunat" toistuu molemmissa
         ruoka_html = ""
         for r in naytettyt:
             ruoka_html += f'<li>{r}</li>\n'
 
         kortit_html += f"""
-        <div class="kortti {tanaan_luokka}">
-            {'<div class="tanaan-badge">Tänään</div>' if tanaan_luokka else ''}
+        <div class="kortti">
             <div class="paiva-otsikko">
                 <span class="paiva-nimi">{nimi}</span>
                 <span class="paiva-pvm">{pvm}</span>
@@ -167,8 +149,6 @@ def generoi_html(paivat: dict) -> str:
             --korostus: #e94560;
             --teksti: #eaeaea;
             --muted: #8892a4;
-            --tanaan-bg: #e94560;
-            --tanaan-teksti: #fff;
             --radius: 16px;
         }}
 
@@ -237,26 +217,6 @@ def generoi_html(paivat: dict) -> str:
         .kortti:hover {{
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-        }}
-
-        .kortti.tanaan {{
-            background: var(--kortti);
-            border-color: var(--korostus);
-            box-shadow: 0 0 0 1px var(--korostus), 0 8px 24px rgba(233,69,96,0.2);
-        }}
-
-        .tanaan-badge {{
-            position: absolute;
-            top: -0.6rem;
-            right: 1rem;
-            background: var(--korostus);
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 0.2rem 0.7rem;
-            border-radius: 100px;
         }}
 
         .paiva-otsikko {{
