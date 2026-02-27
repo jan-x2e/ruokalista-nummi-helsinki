@@ -34,3 +34,10 @@ jobs:
           git add index.html
           git commit -m "Päivitä ruokalista $(date '+%d.%m.%Y')" || echo "Ei muutoksia"
           git push
+      - name: Deploy Netlifyyn
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=.
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
