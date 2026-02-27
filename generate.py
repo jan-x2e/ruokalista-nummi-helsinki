@@ -43,9 +43,16 @@ def hae_ruokalista():
         print(f"Haetaan: {BASE_URL} ...")
         page.goto(BASE_URL, timeout=30_000)
         page.wait_for_timeout(ODOTUSAIKA_MS)
+        # Klikataan "TÄMÄ VIIKKO" ja odotetaan että sisältö latautuu
         try:
             page.get_by_text("TÄMÄ VIIKKO").click()
-            page.wait_for_timeout(2000)
+            page.wait_for_timeout(4000)
+        except Exception:
+            pass
+
+        # Varmistetaan että sivulla näkyy useampi päivä ennen kuin luetaan teksti
+        try:
+            page.wait_for_selector("text=Maanantai, text=ma", timeout=5000)
         except Exception:
             pass
         teksti = page.inner_text("body")
@@ -103,7 +110,8 @@ def paiva_otsikko(paiva_str: str) -> tuple[str, str]:
 
 def generoi_html(paivat: dict) -> str:
     viikko = datetime.now().isocalendar().week
-    paivitetty = datetime.now().strftime("%-d.%-m.%Y klo %H:%M")
+    nyt = datetime.now()
+    paivitetty = f"{nyt.day}.{nyt.month}.{nyt.year} klo {nyt.strftime('%H:%M')}"
 
     # Rakennetaan päiväkortit
     kortit_html = ""
