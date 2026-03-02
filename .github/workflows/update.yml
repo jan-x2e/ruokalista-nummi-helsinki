@@ -2,8 +2,8 @@ name: Päivitä ruokalista
 
 on:
   schedule:
-    # Maanantaisin klo 06:30 EST (11:30 UTC)
-    - cron: '30 11 * * 1'
+    # Maanantaisin klo 06:00 CET (05:00 UTC)
+    - cron: '30 5 * * 1'
   workflow_dispatch:
 
 jobs:
