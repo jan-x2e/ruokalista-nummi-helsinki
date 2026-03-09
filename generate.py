@@ -43,18 +43,29 @@ def hae_ruokalista():
         print(f"Haetaan: {BASE_URL} ...")
         page.goto(BASE_URL, timeout=30_000)
         page.wait_for_timeout(ODOTUSAIKA_MS)
-        # Klikataan "TÄMÄ VIIKKO" ja odotetaan että sisältö latautuu
+        # Odotetaan sivun latautumista
+        page.wait_for_timeout(ODOTUSAIKA_MS)
+
+        # Klikataan "TÄMÄ VIIKKO" useammalla tavalla varmuuden vuoksi
         try:
-            page.get_by_text("TÄMÄ VIIKKO").click()
-            page.wait_for_timeout(4000)
+            page.locator("text=TÄMÄ VIIKKO").first.click()
+            page.wait_for_timeout(3000)
+        except Exception:
+            pass
+        try:
+            page.locator("text=Tämä viikko").first.click()
+            page.wait_for_timeout(3000)
         except Exception:
             pass
 
-        # Varmistetaan että sivulla näkyy useampi päivä ennen kuin luetaan teksti
+        # Varmistetaan ettei olla enää TÄNÄÄN-näkymässä
         try:
-            page.wait_for_selector("text=Maanantai, text=ma", timeout=5000)
+            page.wait_for_selector("text=Maanantai", timeout=5000)
         except Exception:
-            pass
+            try:
+                page.wait_for_selector("text=ma ", timeout=3000)
+            except Exception:
+                pass
         teksti = page.inner_text("body")
         browser.close()
     return jäsennä(teksti)
